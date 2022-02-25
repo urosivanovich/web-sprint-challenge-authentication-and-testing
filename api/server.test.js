@@ -1,6 +1,7 @@
 const request = require('supertest')
 const server = require('./server')
 const db = require('../data/dbConfig')
+const Users = require('./auth/auth-model')
 
 test('sanity', () => {
   expect(true).toBe(true)
@@ -11,9 +12,32 @@ beforeAll(async () => {
   await db.migrate.latest()
 })
 
+beforeEach(async() => {
+  await db('users').truncate();
+});
+
 afterAll(async () => {
   await db.destroy()
 })
+
+// inside Sprint Retrospective Part 1 asked to implement 2 unit tests
+
+describe('UNIT tests with add(user) at the begging of each test', () => {
+  beforeEach(async () => {
+     await Users.add({username: 'urke', password: '1234'})
+  })
+  test('find() returns all users in database', async () => {
+    const allUsers = await Users.find()
+    expect(allUsers).toHaveLength(1)
+    expect(allUsers[0]).toMatchObject({username: 'urke', password: '1234'})
+  })
+  test('findBy(filter) returns filtered user ', async () => {
+    let [res] = await Users.findBy({username: 'urke'})
+    expect(res.username).toBe('urke')
+    expect(res).not.toBeFalsy()
+  })
+})
+
 
 describe('POST /api/auth/register', () => {
   test('returns an error if username/password is missing or already in use',  async () => {
