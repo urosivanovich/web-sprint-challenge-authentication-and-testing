@@ -16,11 +16,11 @@ module.exports = (req, res, next) => {
   */
  const token = req.headers.authorization
  if(!token){
-  next({status: 401, message: 'token required'})
+  res.status(401).json({message: 'token required'})
  } else {
   jwt.verify(token, JWT_SECRET, (err, decodedToken) => { // verify a token symmetric
     if(err){
-      next({status: 401, message: 'token invalid'})
+      res.status(401).json({message: 'token invalid'})
     } else {
       req.decodedJwt = decodedToken
       next()
