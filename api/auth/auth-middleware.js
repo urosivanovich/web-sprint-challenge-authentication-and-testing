@@ -20,7 +20,7 @@ const checkLogin = async (req, res, next) => {
         res.status(401).json({message: 'username and password required'})
     } else {
         const [user] = await Users.findBy({username})
-        if(!user.username || !user.password){
+        if(!user){
             res.status(401).json({message: 'invalid credentials'})
         } else {
             next()
